@@ -12,6 +12,9 @@
     <PackageReference Include="Nexus.Base.CosmosDBRepository" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
