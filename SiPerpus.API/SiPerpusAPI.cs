@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,20 +10,19 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SiPerpus.Model;
 using Microsoft.Azure.Documents;
+using SiPerpus.DAL.Models;
 
-namespace SiPerpus
+namespace SiPerpus.API
 {
     public static class SiPerpusController
     {
-        private const string DatabaseName = "siperpus";
-        private const string CollectionName = "book";
-        private const string Route = "book";
+        private const string DatabaseName = "Catalog";
+        private const string CollectionName = "Book";
 
-        [FunctionName("book-create")]
+        [FunctionName("BookCreate")]
         public static async Task<IActionResult> Create(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = Route)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Book")] HttpRequest req,
             [CosmosDB(
                 DatabaseName,
                 CollectionName,
@@ -64,9 +63,9 @@ namespace SiPerpus
             }
         }
 
-        [FunctionName("book-get-all")]
+        [FunctionName("BookGetAll")]
         public static IActionResult GetAll(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Route)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Book")] HttpRequest req,
             [CosmosDB(
                 DatabaseName,
                 CollectionName,
@@ -79,9 +78,9 @@ namespace SiPerpus
             return new OkObjectResult(books);
         }
 
-        [FunctionName("book-get-by-id")]
+        [FunctionName("BookGetById")]
         public static IActionResult GetById(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = Route + "/{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Book/{id:guid}")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection", PartitionKey = "id")] DocumentClient client,
             ILogger log, string id)
         {
@@ -95,7 +94,7 @@ namespace SiPerpus
 
                 Book book = (dynamic)document;
                 return new OkObjectResult(book);
-            } 
+            }
             catch (Exception e)
             {
                 log.LogError(e, "Get book by id failed processing a request");
@@ -103,12 +102,12 @@ namespace SiPerpus
             }
         }
 
-        [FunctionName("book-update")]
+        [FunctionName("BookUpdate")]
         public static async Task<IActionResult> Update(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = Route + "/{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Book")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
                 DocumentClient client,
-            ILogger log, string id)
+            ILogger log)
         {
             log.LogInformation("Updating book");
 
@@ -128,7 +127,7 @@ namespace SiPerpus
             try
             {
                 Uri collectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
-                var document = client.CreateDocumentQuery(collectionUri).Where(t => t.Id == id)
+                var document = client.CreateDocumentQuery(collectionUri).Where(t => t.Id == updated.Id)
                                 .AsEnumerable().FirstOrDefault();
 
                 if (document == null)
@@ -150,16 +149,16 @@ namespace SiPerpus
             }
             catch (Exception e)
             {
-                log.LogError(e, String.Format("Failed to update book {0}", id), updated);
+                log.LogError(e, String.Format("Failed to update book {0}", updated.Id), updated);
                 return new BadRequestObjectResult("Failed to update book");
             }
 
-            
+
         }
 
-        [FunctionName("book-delete")]
+        [FunctionName("BookDelete")]
         public static async Task<IActionResult> Delete(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = Route + "/{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Book/{id:guid}")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection", PartitionKey = "id")] DocumentClient client,
             ILogger log, string id)
         {

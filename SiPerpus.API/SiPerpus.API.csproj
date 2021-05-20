@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+    <UserSecretsId>1228b24b-e623-4861-b01c-153bb36257f7</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
@@ -9,12 +10,13 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.EventGrid" Version="2.1.0" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.EventHubs" Version="4.2.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
-    <PackageReference Include="Nexus.Base.CosmosDBRepository" Version="1.0.0" />
+    <PackageReference Include="Nexus.Base.CosmosDBRepository" Version="2020.11.9.1" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="README.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\SiPerpus.BLL\SiPerpus.BLL.csproj" />
+    <ProjectReference Include="..\SiPerpus.DAL\SiPerpus.DAL.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
