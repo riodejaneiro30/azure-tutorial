@@ -55,7 +55,7 @@ namespace SiPerpus.API
 
         [FunctionName("BookReadNexus")]
         public static async Task<IActionResult> BookReadNexus(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "BookNexus")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "BookNexus")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient documentClient,
             ILogger log)
         {
@@ -66,7 +66,7 @@ namespace SiPerpus.API
 
         [FunctionName("BookReadByIdNexus")]
         public static async Task<IActionResult> BookReadByIdNexus(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "BookNexus/{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "BookNexus/{id:guid}")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient documentClient,
             string id,
             ILogger log)
@@ -78,7 +78,7 @@ namespace SiPerpus.API
 
         [FunctionName("BookUpdateNexus")]
         public static async Task<IActionResult> BookUpdateNexus(
-            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "BookNexus")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "BookNexus")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection", PartitionKey = "Code")] DocumentClient documentClient,
             ILogger log)
         {
@@ -119,7 +119,7 @@ namespace SiPerpus.API
 
         [FunctionName("BookDeleteNexus")]
         public static async Task<IActionResult> DeleteBookNexus(
-            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "BookNexus/{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "BookNexus/{id:guid}")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
             ILogger log, string id)
         {
