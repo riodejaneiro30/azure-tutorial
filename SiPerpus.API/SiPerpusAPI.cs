@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.Azure.Documents;
 using SiPerpus.DAL.Models;
+using Microsoft.Azure.EventGrid.Models;
+using Microsoft.Azure.EventGrid;
 
 namespace SiPerpus.API
 {
@@ -33,6 +35,13 @@ namespace SiPerpus.API
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Book data;
 
+            var eventGridEndPoint = Environment.GetEnvironmentVariable("eventGridEndPoint");
+            var eventGridKey = Environment.GetEnvironmentVariable("eventGridEndKey");
+
+            var topicHostname = new Uri(eventGridEndPoint).Host;
+            TopicCredentials topicCredentials = new TopicCredentials(eventGridKey);
+            EventGridClient eventGridClient = new EventGridClient(topicCredentials);
+
             try
             {
                 data = JsonConvert.DeserializeObject<Book>(requestBody);
@@ -53,6 +62,7 @@ namespace SiPerpus.API
                 };
 
                 await books.AddAsync(book);
+                eventGridClient.PublishEventsAsync(topicHostname, GetEventsList(book, "Create/")).GetAwaiter().GetResult();
 
                 return new OkObjectResult(book);
             }
@@ -114,6 +124,13 @@ namespace SiPerpus.API
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Book updated;
 
+            var eventGridEndPoint = Environment.GetEnvironmentVariable("eventGridEndPoint");
+            var eventGridKey = Environment.GetEnvironmentVariable("eventGridEndKey");
+
+            var topicHostname = new Uri(eventGridEndPoint).Host;
+            TopicCredentials topicCredentials = new TopicCredentials(eventGridKey);
+            EventGridClient eventGridClient = new EventGridClient(topicCredentials);
+
             try
             {
                 updated = JsonConvert.DeserializeObject<Book>(requestBody);
@@ -132,7 +149,7 @@ namespace SiPerpus.API
 
                 if (document == null)
                 {
-                    return new NotFoundResult();
+                    return new BadRequestObjectResult("Failed to update book");
                 }
 
                 document.SetPropertyValue("Title", updated.Title);
@@ -142,8 +159,9 @@ namespace SiPerpus.API
                 }
 
                 await client.ReplaceDocumentAsync(document);
-
                 Book book = (dynamic)document;
+
+                eventGridClient.PublishEventsAsync(topicHostname, GetEventsList(book, "Update/")).GetAwaiter().GetResult();
 
                 return new OkObjectResult(book);
             }
@@ -152,8 +170,6 @@ namespace SiPerpus.API
                 log.LogError(e, String.Format("Failed to update book {0}", updated.Id), updated);
                 return new BadRequestObjectResult("Failed to update book");
             }
-
-
         }
 
         [FunctionName("BookDelete")]
@@ -164,6 +180,13 @@ namespace SiPerpus.API
         {
             log.LogInformation("Deleting book");
 
+            var eventGridEndPoint = Environment.GetEnvironmentVariable("eventGridEndPoint");
+            var eventGridKey = Environment.GetEnvironmentVariable("eventGridEndKey");
+
+            var topicHostname = new Uri(eventGridEndPoint).Host;
+            TopicCredentials topicCredentials = new TopicCredentials(eventGridKey);
+            EventGridClient eventGridClient = new EventGridClient(topicCredentials);
+
             try
             {
                 Uri collectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseName, CollectionName);
@@ -172,9 +195,11 @@ namespace SiPerpus.API
 
                 if (document == null)
                 {
-                    return new NotFoundResult();
+                    return new BadRequestObjectResult("Failed to delete book");
                 }
                 await client.DeleteDocumentAsync(document.SelfLink, new RequestOptions() { PartitionKey = new PartitionKey(id) });
+                eventGridClient.PublishEventsAsync(topicHostname, GetEventList(id)).GetAwaiter().GetResult();
+
                 return new OkObjectResult(string.Format("Book {0} is deleted", id));
             }
             catch (Exception e)
@@ -182,6 +207,38 @@ namespace SiPerpus.API
                 log.LogError(e, String.Format("Failed to delete book {0}", id));
                 return new BadRequestObjectResult("Failed to delete book");
             }
+        }
+
+        static IList<EventGridEvent> GetEventList(string id)
+        {
+            List<EventGridEvent> eventsList = new List<EventGridEvent>();
+            eventsList.Add(new EventGridEvent()
+            {
+                Id = Guid.NewGuid().ToString(),
+                EventType = "SiPerpus.DAL.Models.Book",
+                Data = id,
+                EventTime = DateTime.Now,
+                Subject = "/Delete",
+                DataVersion = "1.0"
+            });
+
+            return eventsList;
+        }
+
+        static IList<EventGridEvent> GetEventsList(Book book, string subject)
+        {
+            List<EventGridEvent> eventsList = new List<EventGridEvent>();
+            eventsList.Add(new EventGridEvent()
+            {
+                Id = Guid.NewGuid().ToString(),
+                EventType = "SiPerpus.DAL.Models.Book",
+                Data = book,
+                EventTime = DateTime.Now,
+                Subject = subject,
+                DataVersion = "1.0"
+            });
+
+            return eventsList;
         }
     }
 }

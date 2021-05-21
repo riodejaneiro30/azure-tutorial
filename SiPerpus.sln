@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiPerpus.DAL", "SiPerpus.DA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiPerpus.API", "SiPerpus.API\SiPerpus.API.csproj", "{CD766F1F-E722-4AA6-9476-32656610D0BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiPerpus.BLL", "SiPerpus.BLL\SiPerpus.BLL.csproj", "{565FF37B-E340-4714-875E-4AFB6B96163E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiPerpus.BLL", "SiPerpus.BLL\SiPerpus.BLL.csproj", "{565FF37B-E340-4714-875E-4AFB6B96163E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

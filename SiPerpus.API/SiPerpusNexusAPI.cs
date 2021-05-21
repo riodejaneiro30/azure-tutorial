@@ -36,7 +36,7 @@ namespace SiPerpus.API
             {
                 log.LogError(e, "Failed to parse input", requestBody);
                 return new BadRequestObjectResult("Failed to parse input");
-            }
+            }req
 
             try
             {
@@ -44,6 +44,7 @@ namespace SiPerpus.API
 
                 using var bookNexusRep = new Repositories.BookNexusRepository(documentClient);
                 var res = await bookNexusRep.CreateAsync(bookNexus1);
+
                 return new OkObjectResult(res);
             }
             catch (Exception e)
@@ -73,6 +74,7 @@ namespace SiPerpus.API
         {
             BookNexusService bookNexusService = new BookNexusService(new BookNexusRepository(documentClient));
             var data = await bookNexusService.GetBookNexusById(id, new Dictionary<string, string> { { "Code", "xxxx" } });
+            
             return new OkObjectResult(data);
         }
 
@@ -103,7 +105,7 @@ namespace SiPerpus.API
                 {
                     await reps.UpdateAsync(data.Id, data);
                 }
-
+                    
                 log.LogInformation($"Book sucesfully updated. Id: {data.Id}, Title: {data.Title}");
 
                 return data != null
