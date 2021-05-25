@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace SiPerpus.API
 {
-    public static class TestCosmosDBNexus
+    public static class TestCosmosDB
     {
-        [FunctionName("TestCosmosDBNexus")]
+        [FunctionName("TestCosmosDB")]
         public static void Run([CosmosDBTrigger(
-            databaseName: "CatalogNexus",
-            collectionName: "BookNexus",
+            databaseName: "Catalog",
+            collectionName: "Book",
             ConnectionStringSetting = "CosmosDB",
             LeaseCollectionName = "leases",
             CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, ILogger log)

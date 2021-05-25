@@ -1,4 +1,3 @@
-using Microsoft.Azure.Documents;
 using Nexus.Base.CosmosDBRepository;
 using SiPerpus.DAL.Models;
 using System.Collections.Generic;
@@ -11,13 +10,10 @@ namespace SiPerpus.BLL
         private readonly IDocumentDBRepository<BookNexus> _repository;
         public BookNexusService(IDocumentDBRepository<BookNexus> repository)
         {
-            if (this._repository == null)
-            {
-                this._repository = repository;
-            }
+            _repository ??= repository;
         }
 
-        public async Task<Document> CreateBookNexus(BookNexus bookNexus)
+        public async Task<BookNexus> CreateBookNexus(BookNexus bookNexus)
         {
             return await _repository.CreateAsync(bookNexus);
         }
@@ -33,7 +29,7 @@ namespace SiPerpus.BLL
             return await _repository.GetByIdAsync(id, pk);
         }
 
-        public async Task<Document> UpdateBookNexus(string id, BookNexus bookNexus)
+        public async Task<BookNexus> UpdateBookNexus(string id, BookNexus bookNexus)
         {
             return await _repository.UpdateAsync(id, bookNexus);
         }

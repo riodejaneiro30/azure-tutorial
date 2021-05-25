@@ -12,7 +12,7 @@ namespace SiPerpus.API
     public static class TestEvhNexus
     {
         [FunctionName("TestEvhNexus")]
-        public static async Task Run([EventHubTrigger("booknexus.notification", Connection = "eventHubKey")] EventData[] events, ILogger log)
+        public static async Task Run([EventHubTrigger("booknexus.notification", Connection = "EventHubKey")] EventData[] events, ILogger log)
         {
             var exceptions = new List<Exception>();
 

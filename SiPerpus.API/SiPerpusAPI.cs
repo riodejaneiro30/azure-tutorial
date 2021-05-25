@@ -36,15 +36,15 @@ namespace SiPerpus.API
             [CosmosDB(
                 DatabaseName,
                 CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection")]
+                ConnectionStringSetting = "CosmosDB")]
             IAsyncCollector<object> books, ILogger log)
         {
             log.LogInformation("Creating a new book");
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Book data;
 
-            var eventGridEndPoint = Environment.GetEnvironmentVariable("eventGridEndPoint");
-            var eventGridKey = Environment.GetEnvironmentVariable("eventGridEndKey");
+            var eventGridEndPoint = Environment.GetEnvironmentVariable("EventGridEndPoint");
+            var eventGridKey = Environment.GetEnvironmentVariable("EventGridKey");
 
             var topicHostname = new Uri(eventGridEndPoint).Host;
             TopicCredentials topicCredentials = new TopicCredentials(eventGridKey);
@@ -92,7 +92,7 @@ namespace SiPerpus.API
             [CosmosDB(
                 DatabaseName,
                 CollectionName,
-                ConnectionStringSetting = "CosmosDBConnection",
+                ConnectionStringSetting = "CosmosDB",
                 SqlQuery = "SELECT * FROM c order by c._ts desc")]
                 IEnumerable<Book> books,
             ILogger log)
@@ -110,7 +110,7 @@ namespace SiPerpus.API
         [FunctionName("BookGetById")]
         public static IActionResult GetById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Book/{id:guid}")] HttpRequest req,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection", PartitionKey = "id")] DocumentClient client,
+            [CosmosDB(ConnectionStringSetting = "CosmosDB", PartitionKey = "id")] DocumentClient client,
             ILogger log, string id)
         {
             log.LogInformation("Getting book by id");
@@ -140,7 +140,7 @@ namespace SiPerpus.API
         [FunctionName("BookUpdate")]
         public static async Task<IActionResult> Update(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Book")] HttpRequest req,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")]
+            [CosmosDB(ConnectionStringSetting = "CosmosDB")]
                 DocumentClient client,
             ILogger log)
         {
@@ -149,8 +149,8 @@ namespace SiPerpus.API
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             Book updated;
 
-            var eventGridEndPoint = Environment.GetEnvironmentVariable("eventGridEndPoint");
-            var eventGridKey = Environment.GetEnvironmentVariable("eventGridEndKey");
+            var eventGridEndPoint = Environment.GetEnvironmentVariable("EventGridEndPoint");
+            var eventGridKey = Environment.GetEnvironmentVariable("EventGridKey");
 
             var topicHostname = new Uri(eventGridEndPoint).Host;
             TopicCredentials topicCredentials = new TopicCredentials(eventGridKey);
@@ -207,13 +207,13 @@ namespace SiPerpus.API
         [FunctionName("BookDelete")]
         public static async Task<IActionResult> Delete(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Book/{id:guid}")] HttpRequest req,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection", PartitionKey = "id")] DocumentClient client,
+            [CosmosDB(ConnectionStringSetting = "CosmosDB", PartitionKey = "id")] DocumentClient client,
             ILogger log, string id)
         {
             log.LogInformation("Deleting book");
 
-            var eventGridEndPoint = Environment.GetEnvironmentVariable("eventGridEndPoint");
-            var eventGridKey = Environment.GetEnvironmentVariable("eventGridEndKey");
+            var eventGridEndPoint = Environment.GetEnvironmentVariable("EventGridEndPoint");
+            var eventGridKey = Environment.GetEnvironmentVariable("EventGridKey");
 
             var topicHostname = new Uri(eventGridEndPoint).Host;
             TopicCredentials topicCredentials = new TopicCredentials(eventGridKey);
