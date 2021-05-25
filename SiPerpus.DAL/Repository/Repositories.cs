@@ -15,9 +15,6 @@ namespace SiPerpus.DAL.Repository
                 base("CatalogNexus", client, partitionProperties: "Code", eventGridEndPoint: _eventGridEndPoint,
                     eventGridKey: _eventGridKey)
             { }
-            //public BookNexusRepository(DocumentClient client) :
-            //    base("CatalogNexus", client, partitionProperties: "Code")
-            //{ }
         }
     }
 }

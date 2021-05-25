@@ -10,14 +10,22 @@ using Newtonsoft.Json;
 using Microsoft.Azure.Documents.Client;
 using System.Collections.Generic;
 using SiPerpus.DAL.Models;
-using SiPerpus.DAL.Repository;
 using static SiPerpus.DAL.Repository.Repositories;
 using SiPerpus.BLL;
+using System.Net;
+using AzureFunctions.Extensions.Swashbuckle.Attribute;
+using SiPerpus.DAL.Repository;
 
 namespace SiPerpus.API
 {
     public static class SiPerpusNexusAPI
     {
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BookNexus))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookCreateNexus")]
         public static async Task<IActionResult> BookCreateNexus(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "BookNexus")] HttpRequest req,
@@ -36,14 +44,14 @@ namespace SiPerpus.API
             {
                 log.LogError(e, "Failed to parse input", requestBody);
                 return new BadRequestObjectResult("Failed to parse input");
-            }req
+            }
 
             try
             {
                 var bookNexus1 = new BookNexus() { Title = data.Title, Category = data.Category, Code = "xxxx" };
 
-                using var bookNexusRep = new Repositories.BookNexusRepository(documentClient);
-                var res = await bookNexusRep.CreateAsync(bookNexus1);
+                BookNexusService bookNexusService = new BookNexusService(new BookNexusRepository(documentClient));
+                var res = await bookNexusService.CreateBookNexus(bookNexus1);
 
                 return new OkObjectResult(res);
             }
@@ -54,17 +62,31 @@ namespace SiPerpus.API
             }
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookReadNexus")]
         public static async Task<IActionResult> BookReadNexus(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "BookNexus")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient documentClient,
             ILogger log)
         {
+            //BookNexusService bookNexusService = new BookNexusService(new BookNexusRepository(documentClient));
+            //var res = await bookNexusService.GetAllBookNexus();
+            //return new OkObjectResult(res);
             using var bookNexusRep = new Repositories.BookNexusRepository(documentClient);
             var data = await bookNexusRep.GetAsync();
             return new OkObjectResult(data);
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [QueryStringParameter("id", "book id")]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookReadByIdNexus")]
         public static async Task<IActionResult> BookReadByIdNexus(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "BookNexus/{id:guid}")] HttpRequest req,
@@ -78,6 +100,11 @@ namespace SiPerpus.API
             return new OkObjectResult(data);
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BookNexus))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookUpdateNexus")]
         public static async Task<IActionResult> BookUpdateNexus(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "BookNexus")] HttpRequest req,
@@ -101,11 +128,13 @@ namespace SiPerpus.API
 
             try
             {
-                using (var reps = new Repositories.BookNexusRepository(documentClient))
-                {
-                    await reps.UpdateAsync(data.Id, data);
-                }
-                    
+                //using (var reps = new Repositories.BookNexusRepository(documentClient))
+                //{
+                //    await reps.UpdateAsync(data.Id, data);
+                //}
+                BookNexusService bookNexusService = new BookNexusService(new BookNexusRepository(documentClient));
+                await bookNexusService.UpdateBookNexus(data.Id, data);
+
                 log.LogInformation($"Book sucesfully updated. Id: {data.Id}, Title: {data.Title}");
 
                 return data != null
@@ -119,22 +148,26 @@ namespace SiPerpus.API
             }
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BookNexus))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [QueryStringParameter("id", "book id")]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookDeleteNexus")]
         public static async Task<IActionResult> DeleteBookNexus(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "BookNexus/{id:guid}")] HttpRequest req,
-            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient client,
+            [CosmosDB(ConnectionStringSetting = "CosmosDBConnection")] DocumentClient documentClient,
             ILogger log, string id)
         {
             log.LogInformation("BookDeleteNexus processed a request.");
 
             try
             {
-                using (var reps = new Repositories.BookNexusRepository(client))
-                {
-                    await reps.DeleteAsync(id, new Dictionary<string, string> { { "Code", "xxxx" } });
-                    return new OkObjectResult(string.Format("Book {0} is deleted", id));
-                }
-
+                BookNexusService bookNexusService = new BookNexusService(new BookNexusRepository(documentClient));
+                await bookNexusService.DeleteBookNexusAsync(id, new Dictionary<string, string> { { "Code", "xxxx" } });
+                
+                return new OkObjectResult(string.Format("Book {0} is deleted", id));
             }
             catch (Exception e)
             {

@@ -14,6 +14,8 @@ using Microsoft.Azure.Documents;
 using SiPerpus.DAL.Models;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.EventGrid;
+using System.Net;
+using AzureFunctions.Extensions.Swashbuckle.Attribute;
 
 namespace SiPerpus.API
 {
@@ -22,6 +24,12 @@ namespace SiPerpus.API
         private const string DatabaseName = "Catalog";
         private const string CollectionName = "Book";
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookCreate")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Book")] HttpRequest req,
@@ -73,6 +81,11 @@ namespace SiPerpus.API
             }
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookGetAll")]
         public static IActionResult GetAll(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Book")] HttpRequest req,
@@ -88,6 +101,12 @@ namespace SiPerpus.API
             return new OkObjectResult(books);
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [QueryStringParameter("id", "book id")]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookGetById")]
         public static IActionResult GetById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Book/{id:guid}")] HttpRequest req,
@@ -112,6 +131,12 @@ namespace SiPerpus.API
             }
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookUpdate")]
         public static async Task<IActionResult> Update(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Book")] HttpRequest req,
@@ -172,6 +197,13 @@ namespace SiPerpus.API
             }
         }
 
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
+        [QueryStringParameter("id", "book id")]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookDelete")]
         public static async Task<IActionResult> Delete(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Book/{id:guid}")] HttpRequest req,

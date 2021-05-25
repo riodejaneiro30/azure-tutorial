@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiPerpus.API", "SiPerpus.AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiPerpus.BLL", "SiPerpus.BLL\SiPerpus.BLL.csproj", "{565FF37B-E340-4714-875E-4AFB6B96163E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiPerpus.BLL.Test", "SiPerpus.BLL.Test\SiPerpus.BLL.Test.csproj", "{EA1C5E5E-0AD4-48EB-AAFA-1BDE142F14B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{565FF37B-E340-4714-875E-4AFB6B96163E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{565FF37B-E340-4714-875E-4AFB6B96163E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{565FF37B-E340-4714-875E-4AFB6B96163E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA1C5E5E-0AD4-48EB-AAFA-1BDE142F14B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA1C5E5E-0AD4-48EB-AAFA-1BDE142F14B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA1C5E5E-0AD4-48EB-AAFA-1BDE142F14B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA1C5E5E-0AD4-48EB-AAFA-1BDE142F14B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
