@@ -27,7 +27,6 @@ namespace SiPerpus.API
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookCreate")]
@@ -37,6 +36,7 @@ namespace SiPerpus.API
                 DatabaseName,
                 CollectionName,
                 ConnectionStringSetting = "CosmosDB")]
+            [RequestBodyType(typeof(Book), "Create book")]
             IAsyncCollector<object> books, ILogger log)
         {
             log.LogInformation("Creating a new book");
@@ -81,7 +81,7 @@ namespace SiPerpus.API
             }
         }
 
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<Book>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
@@ -101,10 +101,9 @@ namespace SiPerpus.API
             return new OkObjectResult(books);
         }
 
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        [QueryStringParameter("id", "book id")]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookGetById")]
@@ -134,13 +133,13 @@ namespace SiPerpus.API
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookUpdate")]
         public static async Task<IActionResult> Update(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Book")] HttpRequest req,
             [CosmosDB(ConnectionStringSetting = "CosmosDB")]
+            [RequestBodyType(typeof(Book), "Update book")]
                 DocumentClient client,
             ILogger log)
         {
@@ -197,11 +196,9 @@ namespace SiPerpus.API
             }
         }
 
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        //[RequestBodyType(typeof(< RequestBodyObj >), <Description>)]
-        [QueryStringParameter("id", "book id")]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookDelete")]

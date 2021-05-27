@@ -32,8 +32,9 @@ namespace SiPerpus.API
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookCreateNexus")]
         public async Task<IActionResult> BookCreateNexus(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "BookNexus")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "BookNexus")]
             [RequestBodyType(typeof(BookNexus), "Create book nexus")]
+            HttpRequest req,
             ILogger log)
         {
             log.LogInformation("Creating a new book");
@@ -64,7 +65,7 @@ namespace SiPerpus.API
             }
         }
 
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<BookNexus>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
@@ -78,10 +79,9 @@ namespace SiPerpus.API
             return new OkObjectResult(res);
         }
 
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BookNexus))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        [QueryStringParameter("id", "book id")]
         [RequestHttpHeader("Idempotency-Key", isRequired: false)]
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookReadByIdNexus")]
@@ -102,8 +102,9 @@ namespace SiPerpus.API
         [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookUpdateNexus")]
         public async Task<IActionResult> BookUpdateNexus(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "BookNexus")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "BookNexus")]
             [RequestBodyType(typeof(BookNexus), "Update book nexus")]
+            HttpRequest req,
             ILogger log)
         {
             log.LogInformation("BookUpdateNexus processed a request.");
@@ -138,13 +139,11 @@ namespace SiPerpus.API
             }
         }
 
-        //[ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(BookNexus))]
-        //[ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        //[ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
-        //[QueryStringParameter("id", "book id")]
-        //[RequestHttpHeader("Idempotency-Key", isRequired: false)]
-        //[RequestHttpHeader("Authorization", isRequired: false)]
-        [SwaggerIgnore]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(string))]
+        [RequestHttpHeader("Idempotency-Key", isRequired: false)]
+        [RequestHttpHeader("Authorization", isRequired: false)]
         [FunctionName("BookDeleteNexus")]
         public async Task<IActionResult> DeleteBookNexus(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "BookNexus/{id:guid}")] HttpRequest req,
